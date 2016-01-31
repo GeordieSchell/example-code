@@ -4,7 +4,7 @@
  * Richardson/Amundsen
  ***************************/
 
-var http = require('http');
+var https = require('https');
 var crypto = require('crypto');
 var querystring = require('querystring');
 var templates = require('./templates.js');
@@ -34,7 +34,7 @@ function handler(req, res) {
     var segments, i, x, parts, flg;
 
     // set root
-    root = 'http://'+req.headers.host;
+    root = 'https://'+req.headers.host;
 
     // parse incoming request URL
     parts = [];
@@ -437,6 +437,17 @@ function generateETag(data) {
     return '"'+ md5.digest('hex') + '"';
 }
 
+
+var certRoot = '/Users/tintin/src/ca_root'
+var fs = require('fs');
+var tlsOpts = {
+	key: fs.readFileSync(certRoot + '/keys/canada.key'),
+	cert: fs.readFileSync(certRoot + '/certs/canada.crt'),
+	ca: fs.readFileSync(certRoot + '/ca/ca.crt'),
+	requestCert: true,
+	rejectUnauthorized: true	
+};
+
 // register listener for requests
-http.createServer(handler).listen(port);
+https.createServer(tlsOpts, handler).listen(port);
 
